@@ -13,7 +13,8 @@ n_output = 10  # Classes
 X = tf.placeholder(tf.float32, shape=[None, n_input], name="X")  # input type and shape
 W = tf.get_variable(name="Weights", shape=[784, 10],
                     initializer=tf.random_normal_initializer(stddev=0.3))
-b = tf.Variable(tf.zeros([10]), name='bias')
+b = tf.get_variable(name='bias', shape=[10],
+                    initializer=tf.random_normal_initializer(stddev=0.3))
 
 # placeholder for gt values
 y_ = tf.placeholder(tf.float32, [None, 10])
@@ -30,7 +31,7 @@ with tf.name_scope("accuracy_computation"):
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.arg_max(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-# Use GD to minimise loss
+# Use GD to minimize loss
 optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.003)
 train_step = optimizer.minimize(cross_entropy)
 
