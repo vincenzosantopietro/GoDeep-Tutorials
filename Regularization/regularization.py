@@ -24,6 +24,14 @@ flags.DEFINE_string("log_dir", "train_dir", "Folder where to save logs")
 
 FLAGS = flags.FLAGS
 
+FLAGS._parse_flags()
+params_str = ""
+print("Parameters:")
+for attr, value in sorted(FLAGS.__flags.items()):
+    params_str += "{} = {}\n".format(attr.upper(), value)
+    print("{} = {}".format(attr.upper(), value))
+print("")
+
 
 def l1_loss(params):
     return tf.reduce_sum(tf.abs(params))
@@ -142,10 +150,14 @@ def train():
         sess.run(tf.global_variables_initializer())
 
         current_exec = str(time.time())
+        model_save_dir = os.path.join(FLAGS.log_dir, current_exec)
 
-        train_writer = tf.summary.FileWriter(os.path.join(FLAGS.log_dir, current_exec, "train"), sess.graph)
-        val_writer = tf.summary.FileWriter(os.path.join(FLAGS.log_dir, current_exec, "val"), sess.graph)
-        test_writer = tf.summary.FileWriter(os.path.join(FLAGS.log_dir, current_exec, "test"), sess.graph)
+        with open(os.path.join(model_save_dir, "params_settings"), "w+") as f:
+            f.write(params_str)
+
+        train_writer = tf.summary.FileWriter(os.path.join(model_save_dir, "train"), sess.graph)
+        val_writer = tf.summary.FileWriter(os.path.join(model_save_dir, "val"), sess.graph)
+        test_writer = tf.summary.FileWriter(os.path.join(model_save_dir, "test"), sess.graph)
 
         print("Start training")
 
